@@ -1,0 +1,426 @@
+definitions:
+  models.Stuff:
+    properties:
+      id:
+        type: integer
+      stuff_name:
+        type: string
+      stuff_price:
+        type: integer
+      stuff_stock:
+        type: integer
+    type: object
+  models.StuffID:
+    properties:
+      stuff_id:
+        items:
+          type: string
+        type: array
+    type: object
+  models.StuffSerializer:
+    properties:
+      stuff_name:
+        type: string
+      stuff_price:
+        type: integer
+      stuff_stock:
+        type: integer
+    type: object
+  models.Transaction:
+    properties:
+      amount:
+        type: integer
+      detail:
+        items:
+          $ref: '#/definitions/models.TransactionDetail'
+        type: array
+      id:
+        type: integer
+      is_paid:
+        type: boolean
+      transaction_date:
+        type: string
+      u:
+        $ref: '#/definitions/models.User'
+        type: object
+      user_id:
+        type: string
+    type: object
+  models.TransactionDetail:
+    properties:
+      count:
+        type: integer
+      id:
+        type: integer
+      s:
+        $ref: '#/definitions/models.Stuff'
+        type: object
+      stuff_id:
+        type: integer
+      transaction_id:
+        type: string
+    type: object
+  models.TransactionDetailSerializer:
+    properties:
+      count:
+        type: integer
+      stuff_id:
+        description: TransactionID string `json:"transaction_id" form:"transaction_id"`
+        type: integer
+    type: object
+  models.TransactionSerializer:
+    properties:
+      detail:
+        description: |-
+          Amount          int64                         `json:"amount" form:"amount"`
+          TransactionDate time.Time                     `time_format:"2006-01-02" json:"transaction_date" form:"transaction_date"`
+        items:
+          $ref: '#/definitions/models.TransactionDetailSerializer'
+        type: array
+      user_id:
+        type: string
+    type: object
+  models.User:
+    properties:
+      is_admin:
+        type: boolean
+      user_fullname:
+        type: string
+      user_mobile:
+        type: string
+      user_password:
+        type: string
+      username:
+        type: string
+    type: object
+  models.UserLogin:
+    properties:
+      user_password:
+        type: string
+      username:
+        type: string
+    type: object
+  models.UserLoginSuccess:
+    properties:
+      user_fullname:
+        type: string
+      user_mobile:
+        type: string
+      user_token:
+        type: string
+      username:
+        type: string
+    type: object
+  models.UserRegister:
+    properties:
+      user_fullname:
+        type: string
+      user_mobile:
+        type: string
+      user_password:
+        type: string
+      username:
+        type: string
+    type: object
+  models.UserRegisterSuccess:
+    properties:
+      user_fullname:
+        type: string
+      user_mobile:
+        type: string
+      username:
+        type: string
+    type: object
+info:
+  contact: {}
+  license: {}
+paths:
+  /create-user:
+    post:
+      consumes:
+      - application/json
+      description: Digunakan untuk admin yang ingin menambahkan user atau admin baru
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Add User
+        in: body
+        name: User
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.UserRegisterSuccess'
+      summary: User Create
+      tags:
+      - Soal Nomor 1
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Url API untuk login setiap user
+      parameters:
+      - description: User Data
+        in: body
+        name: User
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UserLoginSuccess'
+      summary: User Login
+      tags:
+      - Soal nomor 2
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Digunakan untuk user yang akan melakukan registrasi
+      parameters:
+      - description: Add User
+        in: body
+        name: User
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserRegister'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.UserRegisterSuccess'
+      summary: Consumer Register
+      tags:
+      - Soal Nomor 1
+  /stuff:
+    get:
+      consumes:
+      - application/json
+      description: Mengambil semua data barang
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Stuff'
+            type: array
+      summary: Stuffes Get
+      tags:
+      - Soal nomor 3
+    post:
+      consumes:
+      - application/json
+      description: membuat data barang
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Stuff Data
+        in: body
+        name: Stuff
+        required: true
+        schema:
+          $ref: '#/definitions/models.StuffSerializer'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Stuff'
+      summary: Stuff Create
+      tags:
+      - Soal nomor 3
+  /stuff/{id}:
+    get:
+      consumes:
+      - application/json
+      description: API URL untuk mengambil data barang berdasarkan id
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: id cctv
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Stuff'
+      summary: Stuff Get By ID
+      tags:
+      - Soal nomor 3
+  /stuff/cosumer:
+    get:
+      consumes:
+      - application/json
+      description: APi barang untuk consumer
+      parameters:
+      - description: used for page
+        in: query
+        name: page
+        type: integer
+      - description: used for page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Stuff'
+            type: array
+      summary: Stuff for consumer
+      tags:
+      - Soal nomor 4
+  /stuff/delete/{id}:
+    post:
+      consumes:
+      - application/json
+      description: API URL untuk menghapus barang
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: ""
+      summary: Stuff Delete
+      tags:
+      - Soal nomor 3
+  /stuff/delete/multiple:
+    post:
+      consumes:
+      - application/json
+      description: API URL untuk menghapus beberapa barang
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Array of stuff ID
+        in: body
+        name: ID
+        required: true
+        schema:
+          $ref: '#/definitions/models.StuffID'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: ""
+      summary: Stuff Multiple Delete
+      tags:
+      - Soal nomor 3
+  /stuff/update/{id}:
+    post:
+      consumes:
+      - application/json
+      description: API URL untuk update barang
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Stuff Data
+        in: body
+        name: Stuff
+        required: true
+        schema:
+          $ref: '#/definitions/models.StuffSerializer'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            $ref: '#/definitions/models.Stuff'
+      summary: Stuff Update
+      tags:
+      - Soal nomor 3
+  /transaction:
+    post:
+      consumes:
+      - application/json
+      description: membuat data transaksi
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Transaction Data
+        in: body
+        name: Stuff
+        required: true
+        schema:
+          $ref: '#/definitions/models.TransactionSerializer'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Transaction'
+      summary: Transaction Create
+      tags:
+      - Soal no 5
+swagger: "2.0"
